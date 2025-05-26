@@ -13,7 +13,7 @@ namespace BudgetTracker.API.Controllers
     {
         private readonly BudgetManager _manager;
 
-        public TransactionsController(BudgetManager manager )
+        public TransactionsController(BudgetManager manager)
         {
             _manager = manager;
         }
@@ -28,12 +28,12 @@ namespace BudgetTracker.API.Controllers
         [HttpPost]
         public IActionResult Post(Models.Transaction transaction)
         {
-            transaction.Id = Guid.NewGuid();    
-            transaction.Date = DateTime.Now;     
+            transaction.Id = Guid.NewGuid();
+            transaction.Date = DateTime.Now;
 
-            _manager.AddTransaction(transaction);  
+            _manager.AddTransaction(transaction);
 
-            return Ok(transaction);               
+            return Ok(transaction);
         }
 
         public class TotalsDto
@@ -60,8 +60,49 @@ namespace BudgetTracker.API.Controllers
             return Ok(dto);
         }
 
+        [HttpGet("{id}")]
+
+        public IActionResult GetById(Guid id)
+        {
+            var transaction = _manager.GetTransactionById(id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+            return Ok(transaction);
 
 
+
+        }
+
+        [HttpPut("{id}")]
+
+        public IActionResult Update(Guid id, Models.Transaction transaction)
+        {
+            if (id != transaction.Id)
+            {
+                return BadRequest("Transaction ID mismatch.");
+            }
+            var updatedTransaction = _manager.UpdateTransaction(transaction);
+            if (updatedTransaction == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedTransaction);
+        }
+
+        [HttpDelete("{id}")]
+
+        public IActionResult Delete(Guid id)
+        {
+            var transaction = _manager.GetTransactionById(id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+            _manager.DeleteTransaction(id);
+            return NoContent();
+        }
     }
 }
 

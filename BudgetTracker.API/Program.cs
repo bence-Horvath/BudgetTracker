@@ -1,16 +1,24 @@
+using BudgetTracker.API.Data;
 using BudgetTracker.API.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddSingleton<BudgetManager>();
-
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<BudgetContext>(options =>
+    options.UseSqlite("Data Source=budget.db"));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton<TransactionDataService>();
+builder.Services.AddScoped<BudgetManager>();
+
+
 
 var app = builder.Build();
 
